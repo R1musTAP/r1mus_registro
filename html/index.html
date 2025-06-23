@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R1mus Character Registration</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <div class="background-overlay"></div>
+        
+        <!-- Main Container -->
+        <div class="container" :class="{ 'active': isActive }">
+            <!-- Character Selection -->
+            <div class="character-selection" v-if="currentView === 'selection'">
+                <div class="character-grid">
+                    <div v-for="char in characters" 
+                         :key="char.id" 
+                         class="character-card"
+                         @click="selectCharacter(char)"
+                         @mouseenter="previewCharacter(char)"
+                         :class="{ 'active': selectedCharacter === char }">
+                        
+                        <div class="hologram-effect"></div>
+                        <div class="character-info">
+                            <h3>{{ char.name }}</h3>
+                            <div class="stats-container">
+                                <div class="stat">
+                                    <span class="label">Level</span>
+                                    <div class="progress-bar">
+                                        <div :style="{ width: char.level + '%' }" class="progress"></div>
+                                    </div>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Cash</span>
+                                    <span class="value">${{ formatNumber(char.cash) }}</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Bank</span>
+                                    <span class="value">${{ formatNumber(char.bank) }}</span>
+                                </div>
+                            </div>
+                            <div class="character-timeline">
+                                <div class="timeline-event" v-for="event in char.timeline" :key="event.id">
+                                    <div class="event-dot"></div>
+                                    <div class="event-info">
+                                        <span class="event-title">{{ event.title }}</span>
+                                        <span class="event-date">{{ formatDate(event.date) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Character Creation -->
+            <div class="character-creation" v-if="currentView === 'creation'">
+                <!-- Advanced character customization interface -->
+                <div class="creation-container">
+                    <div class="appearance-editor">
+                        <div class="preview-window">
+                            <!-- 3D character preview here -->
+                        </div>
+                        <div class="customization-options">
+                            <!-- Tabbed interface for different customization categories -->
+                        </div>
+                    </div>
+                    
+                    <div class="character-info-editor">
+                        <input type="text" v-model="newCharacter.firstName" placeholder="First Name">
+                        <input type="text" v-model="newCharacter.lastName" placeholder="Last Name">
+                        <textarea v-model="newCharacter.backstory" placeholder="Character Backstory"></textarea>
+                        
+                        <div class="lifestyle-selector">
+                            <h4>Lifestyle</h4>
+                            <div class="lifestyle-options">
+                                <div v-for="style in lifestyles" 
+                                     :key="style.id" 
+                                     class="lifestyle-option"
+                                     :class="{ 'selected': newCharacter.lifestyle === style.id }"
+                                     @click="selectLifestyle(style.id)">
+                                    <i :class="style.icon"></i>
+                                    <span>{{ style.name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Spawn Selection -->
+            <div class="spawn-selection" v-if="currentView === 'spawn'">
+                <div class="spawn-locations">
+                    <div v-for="location in spawnLocations" 
+                         :key="location.id"
+                         class="spawn-card"
+                         @click="selectSpawn(location)"
+                         @mouseenter="previewSpawn(location)">
+                        <div class="location-preview">
+                            <img :src="location.preview" :alt="location.name">
+                            <div class="location-overlay"></div>
+                        </div>
+                        <div class="location-info">
+                            <h3>{{ location.name }}</h3>
+                            <p>{{ location.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="navigation">
+            <button @click="previousStep" v-if="canGoBack">Back</button>
+            <button @click="nextStep" v-if="canGoForward">Next</button>
+            <button @click="deleteCharacter" v-if="showDelete" class="delete-btn">Delete</button>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>
